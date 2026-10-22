@@ -24,7 +24,7 @@ concurrency:
 jobs:
   build:
     name: Build and publish nanokvm-builder
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, manupa-hnx]
     timeout-minutes: 240
     permissions:
       contents: read
@@ -33,6 +33,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Configure Git safe directory
+        run: git config --global --add safe.directory '*'
 
       - name: Free up disk space
         run: |

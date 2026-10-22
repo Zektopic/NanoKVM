@@ -24,7 +24,7 @@ concurrency:
 jobs:
   validate:
     name: Resolve release tag
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, manupa-hnx]
     permissions:
       contents: read
     outputs:
@@ -36,6 +36,9 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Configure Git safe directory
+        run: git config --global --add safe.directory '*'
 
       - name: Verify tag
         id: tag
@@ -63,7 +66,7 @@ jobs:
       - validate
       - package
     if: inputs.release_action != 'promote-stable'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, manupa-hnx]
     permissions:
       contents: write
 
@@ -73,6 +76,9 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Configure Git safe directory
+        run: git config --global --add safe.directory '*'
 
       - name: Download package artifact
         uses: actions/download-artifact@v4
@@ -172,7 +178,7 @@ jobs:
     name: Promote verified prerelease
     needs: validate
     if: inputs.release_action == 'promote-stable'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, manupa-hnx]
     permissions:
       contents: write
 
@@ -182,6 +188,9 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Configure Git safe directory
+        run: git config --global --add safe.directory '*'
 
       - name: Verify and promote release
         env:

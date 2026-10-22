@@ -55,7 +55,7 @@ concurrency:
 jobs:
   package:
     name: Build package
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, manupa-hnx]
     timeout-minutes: 180
     outputs:
       artifact_name: ${{ steps.version.outputs.artifact_name }}
@@ -74,6 +74,9 @@ jobs:
           # Build scripts from a pull request must not inherit checkout's token.
           persist-credentials: false
 
+      - name: Configure Git safe directory
+        run: git config --global --add safe.directory '*'
+
       - name: Checkout requested ref
         if: inputs.ref != ''
         uses: actions/checkout@v4
@@ -81,6 +84,9 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
           ref: ${{ inputs.ref }}
+
+      - name: Configure Git safe directory
+        run: git config --global --add safe.directory '*'
 
       - name: Resolve version
         id: version
