@@ -38,6 +38,7 @@ jobs:
         run: git config --global --add safe.directory '*'
 
       - name: Free up disk space
+        if: runner.environment != 'self-hosted'
         run: |
           echo "Before:"
           df -h /
