@@ -1,5 +1,7 @@
 name: Issue Tracker
 
+permissions: {}
+
 on:
   issues:
     types: [opened, reopened, closed]
@@ -12,26 +14,36 @@ jobs:
     steps:
       - name: Send Issue Data to API
         env:
+          EVENT_ACTION: ${{ github.event.action }}
+          ISSUE_ID: ${{ github.event.issue.id }}
+          ISSUE_NUM: ${{ github.event.issue.number }}
           RAW_TITLE: ${{ github.event.issue.title }}
           RAW_BODY: ${{ github.event.issue.body }}
+          ISSUE_STATE: ${{ github.event.issue.state }}
+          CREATED_AT: ${{ github.event.issue.created_at }}
+          UPDATED_AT: ${{ github.event.issue.updated_at }}
+          CLOSED_AT: ${{ github.event.issue.closed_at }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          USER_LOGIN: ${{ github.event.issue.user.login }}
+          REPO_NAME: ${{ github.repository }}
           RAW_LABELS: ${{ toJSON(github.event.issue.labels) }}
           RAW_ASSIGNEES: ${{ toJSON(github.event.issue.assignees) }}
           API_URL: ${{ secrets.ISSUE_TRACKER_API_URL }}
           VERIFY_TOKEN: ${{ secrets.VERIFY_TOKEN }}
         run: |
           ISSUE_DATA=$(jq -n \
-            --arg action "${{ github.event.action }}" \
-            --arg id "${{ github.event.issue.id }}" \
-            --arg num "${{ github.event.issue.number }}" \
+            --arg action "$EVENT_ACTION" \
+            --arg id "$ISSUE_ID" \
+            --arg num "$ISSUE_NUM" \
             --arg title "$RAW_TITLE" \
             --arg body "$RAW_BODY" \
-            --arg state "${{ github.event.issue.state }}" \
-            --arg created_at "${{ github.event.issue.created_at }}" \
-            --arg updated_at "${{ github.event.issue.updated_at }}" \
-            --arg closed_at "${{ github.event.issue.closed_at }}" \
-            --arg url "${{ github.event.issue.html_url }}" \
-            --arg user_login "${{ github.event.issue.user.login }}" \
-            --arg repository "${{ github.repository }}" \
+            --arg state "$ISSUE_STATE" \
+            --arg created_at "$CREATED_AT" \
+            --arg updated_at "$UPDATED_AT" \
+            --arg closed_at "$CLOSED_AT" \
+            --arg url "$ISSUE_URL" \
+            --arg user_login "$USER_LOGIN" \
+            --arg repository "$REPO_NAME" \
             --argjson labels "$RAW_LABELS" \
             --argjson assignees "$RAW_ASSIGNEES" \
             '{
